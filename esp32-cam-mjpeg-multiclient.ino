@@ -36,26 +36,16 @@
 
 // Select camera model
 //#define CAMERA_MODEL_WROVER_KIT
-#define CAMERA_MODEL_ESP_EYE
+//#define CAMERA_MODEL_ESP_EYE
 //#define CAMERA_MODEL_M5STACK_PSRAM
 //#define CAMERA_MODEL_M5STACK_WIDE
-//#define CAMERA_MODEL_AI_THINKER
+#define CAMERA_MODEL_AI_THINKER
 
-#include "camera_pins.h"
-
-/*
-Next one is an include with wifi credentials.
-This is what you need to do:
-
-1. Create a file called "home_wifi_multi.h" in the same folder   OR   under a separate subfolder of the "libraries" folder of Arduino IDE. (You are creating a "fake" library really - I called it "MySettings"). 
-2. Place the following text in the file:
+// WIFI settings 
 #define SSID1 "replace with your wifi ssid"
 #define PWD1 "replace your wifi password"
-3. Save.
 
-Should work then
-*/
-#include "home_wifi_multi.h"
+#include "camera_pins.h"
 
 OV2640 cam;
 
@@ -115,8 +105,8 @@ void mjpegCB(void* pvParameters) {
     APP_CPU);
 
   //  Registering webserver handling routines
-  server.on("/mjpeg/1", HTTP_GET, handleJPGSstream);
-  server.on("/jpg", HTTP_GET, handleJPG);
+  server.on("/", HTTP_GET, handleJPGSstream);
+  server.on("/jpg/image.jpg", HTTP_GET, handleJPG);
   server.onNotFound(handleNotFound);
 
   //  Starting webserver
@@ -447,8 +437,10 @@ void setup()
   Serial.println("");
   Serial.print("Stream Link: http://");
   Serial.print(ip);
-  Serial.println("/mjpeg/1");
-
+  Serial.println("/");
+  Serial.print("JPG Link: http://");
+  Serial.print(ip);
+  Serial.println("/jpg/image.jpg");
 
   // Start mainstreaming RTOS task
   xTaskCreatePinnedToCore(
